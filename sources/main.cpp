@@ -13,7 +13,7 @@ int main() {
                   { 100024, 100027, 100050 },
                   { "Futures contract for USD/RUB",
                                "Futures contract for index RTS",
-                                           "Futures contract for Gazprom shares" }
+                               "Futures contract for Gazprom shares" }
     };
     json result;
     size_t i = 0;

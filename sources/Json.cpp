@@ -12,13 +12,13 @@
 #include <string>
 
 Json::Json(const std::string &s) {
-
     size_t i = 0;
     while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n')
         i++;
 
     if (s[i] != '{' && s[i] != '[')
         throw std::logic_error("not json object");
+
     if (s[i] == '{') {
         std::map<std::string, std::any> content;
         while (s[i] != '}') {
@@ -102,7 +102,9 @@ Json::Json(const std::string &s) {
                 std::string check = "";
 
                 while ((s[i] >= '0' && s[i] <= '9') || s[i] == '.') {
-                    if (s[i] == '.') { flag = true; }
+                    if (s[i] == '.')
+                        flag = true;
+
                     check += s[i++];
                 }
                 if (flag == true)
@@ -116,8 +118,13 @@ Json::Json(const std::string &s) {
                 size_t prov = 1;
                 while (prov > 0) {
                     check += s[i];
-                    if (s[i + prov] == '[') { prov++; }
-                    if (s[i] == ']') { prov--; }
+
+                    if (s[i + prov] == '[')
+                        prov++;
+
+                    if (s[i] == ']')
+                        prov--;
+
                     i++;
                 }
                 script = Json(check);
@@ -128,8 +135,12 @@ Json::Json(const std::string &s) {
                 size_t prov = 1;
                 while (prov > 0) {
                     check += s[i];
-                    if (s[i + prov] == '{') { prov++; }
-                    if (s[i] == '}') { prov--; }
+                    if (s[i + prov] == '{')
+                        prov++;
+
+                    if (s[i] == '}')
+                        prov--;
+
                     i++;
                 }
                 script = Json(check);
@@ -177,7 +188,8 @@ Json::Json(const std::string &s) {
                     k++;
                     i++;
                 }
-                if (check == "false") { script = false; }
+                if (check == "false")
+                    script = false;
             }
             if (s[i] == 'n') {
                 std::string check = "";
@@ -244,6 +256,7 @@ bool Json::is_array() const {
 bool Json::is_object() const {
     if (_data.type() == typeid(std::map<std::string, std::any>))
         return true;
+
     return false;
 }
 
@@ -274,6 +287,7 @@ Json Json::parseFile(const std::string &path_to_file) {
 
     if (!write_stream)
         throw std::invalid_argument("given path does not lead to a file");
+
     while (write_stream) {
         std::string value;
         std::getline(write_stream, value);

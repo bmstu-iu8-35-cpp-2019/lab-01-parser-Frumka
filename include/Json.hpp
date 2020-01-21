@@ -13,7 +13,6 @@ private:
     std::any _data;
 
 public:
-
     explicit Json(const std::string& s);
     bool is_array() const;
     bool is_object() const;
