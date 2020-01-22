@@ -169,7 +169,6 @@ Json::Json(const std::string &s) {
                 }
                 if (check == "true")
                     script = true;
-
             }
             if (s[i] == 'f') {
                 std::string check = "";
@@ -181,7 +180,6 @@ Json::Json(const std::string &s) {
                 }
                 if (check == "false")
                     script = false;
-
             }
             if (s[i] == 'n') {
                 std::string check = "";
