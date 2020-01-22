@@ -13,8 +13,10 @@
 
 Json::Json(const std::string &s) {
     size_t i = 0;
-    while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n')
+
+    while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n') {
         i++;
+    }
 
     if (s[i] != '{' && s[i] != '[')
         throw std::logic_error("not json object");
@@ -23,55 +25,49 @@ Json::Json(const std::string &s) {
         std::map<std::string, std::any> content;
         while (s[i] != '}') {
             i++;
-
             while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == ',') {
                 i++;
             }
-
             if (s[i] == '}')
                 break;
 
             std::string key = "";
             if (s[i] == '"') {
                 i++;
-
                 while (s[i] != '"') {
-                    key += s[i++];
+                    key += s[i];
+                    i++;
                 }
             }
-
             i++;
             while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n') {
                 i++;
             }
-
             if (s[i] == ':')
                 i++;
 
             std::any script;
-            while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n')
+
+            while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n') {
                 i++;
-
-            if (s[i++] == '"') {
+            }
+            if (s[i] == '"') {
+                i++;
                 std::string value = "";
-
                 while (s[i] != '"') {
                     value += s[i];
                     i++;
                 }
-
                 script = value;
             }
             if (s[i] == 't') {
                 std::string check = "";
                 size_t k = 0;
-
                 while (k != 4) {
                     check += s[i];
                     k++;
                     i++;
                 }
-
                 if (check == "true")
                     script = true;
             }
@@ -100,25 +96,21 @@ Json::Json(const std::string &s) {
             if ((s[i] >= '0' && s[i] <= '9') || s[i] == '-') {
                 bool flag = false;
                 std::string check = "";
-
                 while ((s[i] >= '0' && s[i] <= '9') || s[i] == '.') {
-                    if (s[i] == '.')
-                        flag = true;
-
-                    check += s[i++];
+                    if (s[i] == '.') { flag = true; }
+                    check += s[i];
+                    i++;
                 }
-                if (flag == true)
+                if (flag )
                     script = std::atof(check.c_str());
 
                 script = std::atoi(check.c_str());
             }
-
             if (s[i] == '[') {
                 std::string check;
                 size_t prov = 1;
                 while (prov > 0) {
                     check += s[i];
-
                     if (s[i + prov] == '[')
                         prov++;
 
@@ -129,7 +121,6 @@ Json::Json(const std::string &s) {
                 }
                 script = Json(check);
             }
-
             if (s[i] == '{') {
                 std::string check;
                 size_t prov = 1;
@@ -147,15 +138,15 @@ Json::Json(const std::string &s) {
             }
             content.insert(std::make_pair(key, script));
         }
-
         _data = content;
     } else if (s[i] == '[') {
         std::vector<std::any> scripts_vector;
-        while (s[i++] != ']') {
+        while (s[i] != ']') {
             std::any script;
-            while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == ',')
+            i++;
+            while (s[i] == ' ' || s[i] == '\t' || s[i] == '\n' || s[i] == ',') {
                 i++;
-
+            }
             if (s[i] == ']')
                 break;
 
@@ -168,7 +159,6 @@ Json::Json(const std::string &s) {
                 }
                 script = value;
             }
-
             if (s[i] == 't') {
                 std::string check = "";
                 size_t k = 0;
@@ -179,6 +169,7 @@ Json::Json(const std::string &s) {
                 }
                 if (check == "true")
                     script = true;
+
             }
             if (s[i] == 'f') {
                 std::string check = "";
@@ -190,6 +181,7 @@ Json::Json(const std::string &s) {
                 }
                 if (check == "false")
                     script = false;
+
             }
             if (s[i] == 'n') {
                 std::string check = "";
@@ -199,16 +191,13 @@ Json::Json(const std::string &s) {
                     k++;
                     i++;
                 }
-                if (check == "null")
-                    script = NULL;
+                if (check == "null") { script = NULL; }
             }
             if ((s[i] >= '0' && s[i] <= '9') || s[i] == '-') {
                 bool flag = false;
                 std::string check = "";
                 while ((s[i] >= '0' && s[i] <= '9') || s[i] == '.') {
-                    if (s[i] == '.')
-                        flag = true;
-
+                    if (s[i] == '.') { flag = true; }
                     check += s[i];
                     i++;
                 }
@@ -220,22 +209,29 @@ Json::Json(const std::string &s) {
             if (s[i] == '[') {
                 std::string check;
                 size_t prov = 1;
-
                 while (prov > 0) {
                     check += s[i];
-                    if (s[i + prov] == '[') { prov++; }
-                    if (s[i] == ']') { prov--; }
+                    if (s[i + prov] == '[')
+                        prov++;
+
+                    if (s[i] == ']')
+                        prov--;
+
                     i++;
                 }
                 script = Json(check);
             }
             if (s[i] == '{') {
                 std::string check;
-                size_t prov = 1;
-                while (prov > 0) {
+                size_t advance_right = 1;
+                while (advance_right > 0) {
                     check += s[i];
-                    if (s[i + prov] == '{') { prov++; }
-                    if (s[i] == '}') { prov--; }
+                    if (s[i + advance_right] == '{')
+                        advance_right++;
+
+                    if (s[i] == '}')
+                        advance_right--;
+
                     i++;
                 }
                 script = Json(check);
